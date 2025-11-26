@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-int(){
-  printf("jepin bujang"):
-    return0;
+int main (){
+  printf("jepin bujang");
+    return 0;
 
 }
