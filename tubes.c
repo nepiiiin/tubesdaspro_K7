@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-int(){
-  printf("jepin bujang"):
-    return0;
-
+int main(){
+  printf("jepin bujang");
+  printf("lukman monyet");
+    return 0;
+ 
 }
