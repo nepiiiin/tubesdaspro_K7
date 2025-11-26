@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main (){
-  printf("jepin bujang");
+  printf("Hello, World!\n");
+  printf("ini adalah program C sederhana.\n");
     return 0;
-
 }
