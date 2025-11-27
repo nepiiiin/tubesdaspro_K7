@@ -2,7 +2,7 @@
 
 int main(){
     int i, n;
-    printf ("contoh perurnagan \n");
+    printf ("contoh perulagan \n");
     printf ("masukkan nilai n: ");
     scanf ("%d", &n);   
 
