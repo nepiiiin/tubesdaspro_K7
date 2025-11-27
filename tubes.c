@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-int main(){
-  printf("jepin bujang");
+int main()
+{
+  printf("jepin monyet\n");
   printf("lukman monyet");
-    return 0;
- 
+  return 0;
 }
