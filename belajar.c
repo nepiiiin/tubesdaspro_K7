@@ -12,7 +12,6 @@ int main()
     else
     {
         printf("Angka %d adalah ganjil.\n", angka);
-    }
-    
+    }   
     return 0;
 }
