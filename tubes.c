@@ -11,7 +11,7 @@ struct Mahasiswa {
     int jumlahMK;
     struct MataKuliah mk[20];
 };
-//  buat fungsi untuk menentukan grade berdasarkan rata-rata nilai
+//  untuk menentukan grade berdasarkan rata-rata nilai
 const char * grade (float rata){
      if (rata >= 80)
         return "A";
@@ -28,7 +28,7 @@ const char * grade (float rata){
     else
         return "E";
 }
-// buat fungsi untuk menentukan ipk berdasarkan rata-rata nilai
+// untuk menentukan ipk berdasarkan rata-rata nilai
 float getBobotGrade(float rata) {
     if (rata >= 80)
         return 4.00;
