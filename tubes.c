@@ -45,7 +45,7 @@ float getBobotGrade(float rata) {
     else
         return 0.00;
 }
-
+// input dan output data mahasiswa
 int main() {
     struct Mahasiswa mhs;
     int i;
