@@ -1,19 +1,28 @@
 #include <stdio.h>
 
-struct MataKuliah {
+// warna teks
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+
+struct MataKuliah
+{
     char namaMK[50];
     float nilai;
 };
 
-struct Mahasiswa {
+struct Mahasiswa
+{
     char nama[50];
     char NIM[20];
     int jumlahMK;
     struct MataKuliah mk[20];
 };
-//  untuk menentukan grade berdasarkan rata-rata nilai
-const char * grade (float rata){
-     if (rata >= 80)
+
+//  nyari grade berdasarkan rata-rata nilai
+
+const char *grade(float rata)
+{
+    if (rata >= 80)
         return "A";
     else if (rata >= 75)
         return "B+";
@@ -28,8 +37,11 @@ const char * grade (float rata){
     else
         return "E";
 }
-// untuk menentukan ipk berdasarkan rata-rata nilai
-float getBobotGrade(float rata) {
+
+// nyari ipk berdasarkan rata-rata nilai
+
+float getBobotGrade(float rata)
+{
     if (rata >= 80)
         return 4.00;
     else if (rata >= 75)
@@ -45,8 +57,11 @@ float getBobotGrade(float rata) {
     else
         return 0.00;
 }
-// input dan output data mahasiswa
-int main() {
+
+// input
+
+int main()
+{
     struct Mahasiswa mhs;
     int i;
     float total = 0, rata;
@@ -65,8 +80,9 @@ int main() {
 
     printf("\n=== Input Mata Kuliah & Nilai ===\n");
 
-    for(i = 0; i < mhs.jumlahMK; i++){
-        printf("\nMata Kuliah ke-%d\n", i+1);
+    for (i = 0; i < mhs.jumlahMK; i++)
+    {
+        printf("\nMata Kuliah ke-%d\n", i + 1);
 
         printf("Nama Mata Kuliah : ");
         fgets(mhs.mk[i].namaMK, sizeof(mhs.mk[i].namaMK), stdin);
@@ -80,13 +96,16 @@ int main() {
 
     rata = total / mhs.jumlahMK;
 
+    // output
+
     printf("\n=== DATA MAHASISWA ===\n");
     printf("Nama\t: %s", mhs.nama);
     printf("NIM\t: %s", mhs.NIM);
 
     printf("\nDaftar Nilai:\n");
-    for(i = 0; i < mhs.jumlahMK; i++){
-        printf(" %d. %sNilai: %.2f\n", i+1, mhs.mk[i].namaMK, mhs.mk[i].nilai);
+    for (i = 0; i < mhs.jumlahMK; i++)
+    {
+        printf(" %d. %sNilai: %.2f\n", i + 1, mhs.mk[i].namaMK, mhs.mk[i].nilai);
     }
 
     printf("\nRata-rata Nilai: %.2f\n", rata);
@@ -95,9 +114,9 @@ int main() {
 
     printf("Status: ");
     if (rata >= 60)
-        printf("Lulus\n");
+        printf(GREEN "Lulus\n");
     else
-        printf("Tidak Lulus\n");
+        printf(RED "Tidak Lulus\n");
 
     return 0;
 }
