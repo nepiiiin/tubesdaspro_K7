@@ -119,5 +119,44 @@ int main()
     else
         printf(RED "Tidak Lulus\n" RESET);
 
+    // nyimpan file
+
+    FILE *fp = fopen("data.txt", "a");
+    if (fp)
+    {
+        fprintf(fp, "%s", mhs.nama);
+        fprintf(fp, "%s", mhs.NIM);
+        fprintf(fp, "%d\n", mhs.jumlahMK);
+
+        for (int j = 0; j < mhs.jumlahMK; j++){
+            fprintf(fp, "%s", mhs.mk[j].namaMK);
+            fprintf(fp, "%.2f\n", mhs.mk[j].nilai);
+        }
+        fclose(fp);
+        printf("\nData berhasil disimpan ke file!\n");
+    }
+    else{
+    printf("Gagal menyimpan ke file.\n");
+    }
+
+    //nampilin data
+
+    printf("\n===SEMUA DATA DALAM FILE===\n");
+    FILE *fr = fopen("data.txt", "r");
+    if (!fr){
+        printf("File kosong\n");
+        return 0;
+    }
+
+    char baris[100];
+    while (fgets(baris, sizeof(baris), fr))
+    {
+        if (strcmp(baris, "\n") ==0)
+        printf("\n");
+        else
+        printf("%s", baris);
+    }
+    fclose(fr);
+
     return 0;
 }
