@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 // warna teks
 #define RED "\033[31m"
@@ -18,6 +19,25 @@ struct Mahasiswa
     int jumlahMK;
     struct MataKuliah mk[20];
 };
+
+void hapusNewline(char *str)
+{
+  int len = strlen(str);
+  if (len > 0 && str[len - 1] == '\n'){
+      str[len - 1] = '\0';
+  }
+}
+
+int toInt(const char *str)
+{
+    int result = 0;
+    while (*str)
+    {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+    return result;
+}
 
 //  nyari grade berdasarkan rata-rata nilai
 
@@ -59,12 +79,81 @@ float getBobotGrade(float rata)
         return 0.00;
 }
 
+void tampilkanSemuaData(struct Mahasiswa m){
+     float total = 0;
+    for (int i = 0; i < m.jumlahMK; i++){
+        total += m.mk[i].nilai;
+    }
+
+    float rata = total / m.jumlahMK;
+    
+    printf("\n=== DATA MAHASISWA ===\n");
+    printf("Nama\t: %s", m.nama);
+    printf("NIM\t: %s", m.NIM);
+    printf("\nDaftar Nilai:\n");
+    for (int i = 0; i < m.jumlahMK; i++){
+        printf(" %d. %sNilai: %.2f\n", i + 1, m.mk[i].namaMK, m.mk[i].nilai);
+    }
+
+    printf("\n===== NILAI RATA-RATA =====\n");
+    printf("Rata-rata Nilai: %.2f\n", rata);
+    printf("Grade: %s\n", grade(rata));
+    printf("IPK: %.2f\n", getBobotGrade(rata) );
+    printf("Status: ");
+    if (rata >= 60)
+        printf(GREEN "Lulus\n" RESET);
+    else
+        printf(RED "Tidak Lulus\n" RESET);
+
+    FILE *fr = fopen("data.txt", "r");
+    if (!fr){
+        printf("File kosong\n");
+        return;
+    }
+    printf("\n===SEMUA DATA DALAM FILE===\n");
+    char baris[100];
+    int lanjut = 0;
+    int jumlahMK = 0;
+    int hitungMK = 0;
+
+    while (fgets(baris, sizeof(baris), fr)){
+        hapusNewline(baris);
+        if (lanjut == 0){
+            printf("Nama    : %s\n", baris);
+            lanjut = 1;
+        }
+        else if (lanjut == 1){
+            printf("NIM     : %s\n", baris);
+            lanjut = 2;
+        }
+        else if (lanjut == 2){
+            jumlahMK = toInt(baris);
+            printf("Jumlah MK: %d\n", jumlahMK);
+            lanjut = 3;
+            hitungMK = 0;
+        }
+        else if (lanjut == 3){
+            printf("Mata Kuliah: %s\n", baris);
+            lanjut = 4;
+        }
+        else if (lanjut == 4){
+            printf("Nilai: %s\n", baris);
+            hitungMK++;
+            if (hitungMK == jumlahMK) lanjut = 0;
+            }
+            else{
+                lanjut = 3;
+        }
+    }
+    fclose(fr);
+}
+
 // input
 
-int main()
-{
+int main(){
     struct Mahasiswa mhs; 
     int choice;
+    int dataYgAda = 0;
 
     while (1)
     {
@@ -78,17 +167,19 @@ int main()
 
         if (choice == 1)
         {
-            // Input data mahasiswa (mirip kode asli, tapi untuk mhs[count])
+            // Input data mahasiswa
             int i;
-            float total = 0, rata;
+            float total = 0;
 
             printf("\n=== Input Data Mahasiswa ===\n");
 
             printf("Masukkan Nama Mahasiswa : ");
             fgets(mhs.nama, sizeof(mhs.nama), stdin);
+            hapusNewline(mhs.nama);
 
             printf("Masukkan NIM : ");
             fgets(mhs.NIM, sizeof(mhs.NIM), stdin);
+            hapusNewline(mhs.NIM);
 
             printf("Masukkan jumlah mata kuliah : ");
             scanf("%d", &mhs.jumlahMK);
@@ -106,86 +197,46 @@ int main()
                 printf("Nilai : ");
                 scanf("%f", &mhs.mk[i].nilai);
                 getchar();
+                total += mhs.mk[i].nilai;
 
-                total += mhs    .mk[i].nilai;
             }
-
-            rata = total / mhs.jumlahMK;
-
-            // output
-
-            printf("\n=== DATA MAHASISWA ===\n");
-            printf("Nama\t: %s", mhs.nama);
-            printf("NIM\t: %s", mhs.NIM);
-
-            printf("\nDaftar Nilai:\n");
-            for (i = 0; i < mhs.jumlahMK; i++)
-            {
-                printf(" %d. %sNilai: %.2f\n", i + 1, mhs.mk[i].namaMK, mhs.mk[i].nilai);
-            }
-
-            printf("\nRata-rata Nilai: %.2f\n", rata);
-            printf("Grade: %s\n", grade(rata));
-            printf("IPK: %.2f\n", getBobotGrade(rata));
-
-            printf("Status: ");
-            if (rata >= 60)
-                printf(GREEN "Lulus\n" RESET);
-            else
-                printf(RED "Tidak Lulus\n" RESET);
-
             // nyimpan file
 
             FILE *fp = fopen("data.txt", "a");
             if (fp)
             {
-                fprintf(fp, "%s", mhs.nama);
-                fprintf(fp, "%s", mhs.NIM);
+                fprintf(fp, "%s\n", mhs.nama);
+                fprintf(fp, "%s\n", mhs.NIM);
                 fprintf(fp, "%d\n", mhs.jumlahMK);
 
                 for (int j = 0; j < mhs.jumlahMK; j++){
-                    fprintf(fp, "%s", mhs.mk[j].namaMK);
+                    fprintf(fp, "%s\n", mhs.mk[j].namaMK);
                     fprintf(fp, "%.2f\n", mhs.mk[j].nilai);
                 }
+                fprintf(fp, "---\n");
                 fclose(fp);
-                printf("\nData berhasil disimpan ke file!\n");
+                printf(GREEN"Data berhasil disimpan ke file.\n"RESET);
             }
             else{
-            printf("Gagal menyimpan ke file.\n");
+            printf(RED"Gagal menyimpan ke file.\n"RESET);
             }
-
-            //nampilin data
-
-            printf("\n===SEMUA DATA DALAM FILE===\n");
-            FILE *fr = fopen("data.txt", "r");
-            if (!fr){
-                printf("File kosong\n");
-                return 0;
-            }
-
-            char baris[100];
-            while (fgets(baris, sizeof(baris), fr))
-            {
-                if (baris[0] == '\n')
-                printf("\n");
-                else
-                printf("%s", baris);
-            }
-            fclose(fr);
-
-            return 0;
-                    
+            dataYgAda = 1;
         }
-        else if (choice == 2)
-        {
-            printf("Input Data Mahasiswa Terlebih Dahulu\n");
+        else if (choice == 2){
+            if (dataYgAda == 0){
+                printf(RED"\nData mahasiswa belum diinputkan. Silakan input data terlebih dahulu.\n"RESET);
+                continue;
+            }
+            tampilkanSemuaData(mhs);
+        }
+        else if (choice == 3){
+            printf("Terimakasih\n");
             break;
         }
-        else
-        {
-            printf("Terimakasih\n");
+
+        else{
+            printf("Pilihan tidak valid. Silakan coba lagi.\n");
         }
     }
-
     return 0;
 }
