@@ -151,7 +151,7 @@ int main()
     char baris[100];
     while (fgets(baris, sizeof(baris), fr))
     {
-        if (strcmp(baris, "\n") ==0)
+        if (baris[0] == '\n')
         printf("\n");
         else
         printf("%s", baris);
