@@ -63,100 +63,129 @@ float getBobotGrade(float rata)
 
 int main()
 {
-    struct Mahasiswa mhs;
-    int i;
-    float total = 0, rata;
+    struct Mahasiswa mhs; 
+    int choice;
 
-    printf("\n=== Input Data Mahasiswa ===\n");
-
-    printf("Masukkan Nama Mahasiswa : ");
-    fgets(mhs.nama, sizeof(mhs.nama), stdin);
-
-    printf("Masukkan NIM : ");
-    fgets(mhs.NIM, sizeof(mhs.NIM), stdin);
-
-    printf("Masukkan jumlah mata kuliah : ");
-    scanf("%d", &mhs.jumlahMK);
-    getchar();
-
-    printf("\n=== Input Mata Kuliah & Nilai ===\n");
-
-    for (i = 0; i < mhs.jumlahMK; i++)
+    while (1)
     {
-        printf("\nMata Kuliah ke-%d\n", i + 1);
+        printf(RED"\n==="RESET" MENU UTAMA MENGELOLA NILAI MAHASISWA"RED" ===\n" RESET);
+        printf(GREEN "1. Input Data Mahasiswa\n" RESET);
+        printf(GREEN "2. Tampilkan Semua Data\n" RESET);
+        printf(RED "3. Keluar\n" RESET);
+        printf("Pilih opsi: ");
+        scanf("%d", &choice);
+        getchar(); 
 
-        printf("Nama Mata Kuliah : ");
-        fgets(mhs.mk[i].namaMK, sizeof(mhs.mk[i].namaMK), stdin);
+        if (choice == 1)
+        {
+            // Input data mahasiswa (mirip kode asli, tapi untuk mhs[count])
+            int i;
+            float total = 0, rata;
 
-        printf("Nilai : ");
-        scanf("%f", &mhs.mk[i].nilai);
-        getchar();
+            printf("\n=== Input Data Mahasiswa ===\n");
 
-        total += mhs.mk[i].nilai;
-    }
+            printf("Masukkan Nama Mahasiswa : ");
+            fgets(mhs.nama, sizeof(mhs.nama), stdin);
 
-    rata = total / mhs.jumlahMK;
+            printf("Masukkan NIM : ");
+            fgets(mhs.NIM, sizeof(mhs.NIM), stdin);
 
-    // output
+            printf("Masukkan jumlah mata kuliah : ");
+            scanf("%d", &mhs.jumlahMK);
+            getchar();
 
-    printf("\n=== DATA MAHASISWA ===\n");
-    printf("Nama\t: %s", mhs.nama);
-    printf("NIM\t: %s", mhs.NIM);
+            printf("\n=== Input Mata Kuliah & Nilai ===\n");
 
-    printf("\nDaftar Nilai:\n");
-    for (i = 0; i < mhs.jumlahMK; i++)
-    {
-        printf(" %d. %sNilai: %.2f\n", i + 1, mhs.mk[i].namaMK, mhs.mk[i].nilai);
-    }
+            for (i = 0; i < mhs.jumlahMK; i++)
+            {
+                printf("\nMata Kuliah ke-%d\n", i + 1);
 
-    printf("\nRata-rata Nilai: %.2f\n", rata);
-    printf("Grade: %s\n", grade(rata));
-    printf("IPK: %.2f\n", getBobotGrade(rata));
+                printf("Nama Mata Kuliah : ");
+                fgets(mhs.mk[i].namaMK, sizeof(mhs.mk[i].namaMK), stdin);
 
-    printf("Status: ");
-    if (rata >= 60)
-        printf(GREEN "Lulus\n" RESET);
-    else
-        printf(RED "Tidak Lulus\n" RESET);
+                printf("Nilai : ");
+                scanf("%f", &mhs.mk[i].nilai);
+                getchar();
 
-    // nyimpan file
+                total += mhs    .mk[i].nilai;
+            }
 
-    FILE *fp = fopen("data.txt", "a");
-    if (fp)
-    {
-        fprintf(fp, "%s", mhs.nama);
-        fprintf(fp, "%s", mhs.NIM);
-        fprintf(fp, "%d\n", mhs.jumlahMK);
+            rata = total / mhs.jumlahMK;
 
-        for (int j = 0; j < mhs.jumlahMK; j++){
-            fprintf(fp, "%s", mhs.mk[j].namaMK);
-            fprintf(fp, "%.2f\n", mhs.mk[j].nilai);
+            // output
+
+            printf("\n=== DATA MAHASISWA ===\n");
+            printf("Nama\t: %s", mhs.nama);
+            printf("NIM\t: %s", mhs.NIM);
+
+            printf("\nDaftar Nilai:\n");
+            for (i = 0; i < mhs.jumlahMK; i++)
+            {
+                printf(" %d. %sNilai: %.2f\n", i + 1, mhs.mk[i].namaMK, mhs.mk[i].nilai);
+            }
+
+            printf("\nRata-rata Nilai: %.2f\n", rata);
+            printf("Grade: %s\n", grade(rata));
+            printf("IPK: %.2f\n", getBobotGrade(rata));
+
+            printf("Status: ");
+            if (rata >= 60)
+                printf(GREEN "Lulus\n" RESET);
+            else
+                printf(RED "Tidak Lulus\n" RESET);
+
+            // nyimpan file
+
+            FILE *fp = fopen("data.txt", "a");
+            if (fp)
+            {
+                fprintf(fp, "%s", mhs.nama);
+                fprintf(fp, "%s", mhs.NIM);
+                fprintf(fp, "%d\n", mhs.jumlahMK);
+
+                for (int j = 0; j < mhs.jumlahMK; j++){
+                    fprintf(fp, "%s", mhs.mk[j].namaMK);
+                    fprintf(fp, "%.2f\n", mhs.mk[j].nilai);
+                }
+                fclose(fp);
+                printf("\nData berhasil disimpan ke file!\n");
+            }
+            else{
+            printf("Gagal menyimpan ke file.\n");
+            }
+
+            //nampilin data
+
+            printf("\n===SEMUA DATA DALAM FILE===\n");
+            FILE *fr = fopen("data.txt", "r");
+            if (!fr){
+                printf("File kosong\n");
+                return 0;
+            }
+
+            char baris[100];
+            while (fgets(baris, sizeof(baris), fr))
+            {
+                if (baris[0] == '\n')
+                printf("\n");
+                else
+                printf("%s", baris);
+            }
+            fclose(fr);
+
+            return 0;
+                    
         }
-        fclose(fp);
-        printf("\nData berhasil disimpan ke file!\n");
-    }
-    else{
-    printf("Gagal menyimpan ke file.\n");
-    }
-
-    //nampilin data
-
-    printf("\n===SEMUA DATA DALAM FILE===\n");
-    FILE *fr = fopen("data.txt", "r");
-    if (!fr){
-        printf("File kosong\n");
-        return 0;
-    }
-
-    char baris[100];
-    while (fgets(baris, sizeof(baris), fr))
-    {
-        if (baris[0] == '\n')
-        printf("\n");
+        else if (choice == 2)
+        {
+            printf("Input Data Mahasiswa Terlebih Dahulu\n");
+            break;
+        }
         else
-        printf("%s", baris);
+        {
+            printf("Terimakasih\n");
+        }
     }
-    fclose(fr);
 
     return 0;
 }
