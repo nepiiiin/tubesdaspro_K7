@@ -4,6 +4,8 @@
 // warna teks
 #define RED "\033[31m"
 #define GREEN "\033[32m"
+#define BLUE "\033[34m"
+#define YELLOW "\033[33m"
 #define RESET "\033[0m"
 
 struct MataKuliah
@@ -31,10 +33,11 @@ void hapusNewline(char *str)
 int toInt(const char *str)
 {
     int result = 0;
-    while (*str)
+    int i = 0;
+    while (str[i] && (str[i] >= '0' && str[i] <= '9'))
     {
-        result = result * 10 + (*str - '0');
-        str++;
+        result = result * 10 + (str[i] - '0');
+        i++;
     }
     return result;
 }
@@ -79,6 +82,14 @@ float getBobotGrade(float rata)
         return 0.00;
 }
 
+const char *statusKelulusan(float ipk)
+{
+    if (ipk >= 2.00)
+        return "Lulus";
+    else
+        return "Tidak Lulus";
+}
+
 float toFloat(const char *str) {
     float result = 0;
     int i = 0;
@@ -95,6 +106,8 @@ float toFloat(const char *str) {
             }
         } else if (str[i] == '.') {
             decimal = 1;
+        } else {
+            break; 
         }
         i++;
     }
@@ -111,7 +124,9 @@ void tampilkanSemuaDataFile() {
     char baris[100];
     char nama[50], NIM[20];
     int jumlahMK;
-    int mahasiswaKe = 0;
+    int mhsKe = 0;
+
+    printf(BLUE "\n=== DATA MAHASISWA YANG SUDAH ADA ===\n" RESET);
 
     while (fgets(baris, sizeof(baris), fr)) {
         hapusNewline(baris);
@@ -127,11 +142,22 @@ void tampilkanSemuaDataFile() {
         hapusNewline(baris);
         jumlahMK = toInt(baris);
 
-        printf("\n=== Mahasiswa ke-%d ===\n", ++mahasiswaKe);
+        if (jumlahMK < 1 || jumlahMK > 9) {
+            printf(RED "Data mahasiswa ke-%d tidak valid (jumlah MK: %d). Melewati...\n" RESET, ++mhsKe, jumlahMK);
+            while (fgets(baris, sizeof(baris), fr)) {
+                hapusNewline(baris);
+                if (strcmp(baris, "---") == 0) break;
+            }
+            continue;
+        }
+
+        printf(YELLOW"\n=== Mahasiswa ke-%d ===\n"RESET, ++mhsKe);
         printf("Nama\t: %s\n", nama);
         printf("NIM\t: %s\n", NIM);
         printf("Jumlah MK: %d\n", jumlahMK);
 
+        float total = 0.0;
+        int validMK = 0;
         for (int i = 0; i < jumlahMK; i++) {
             char namaMK[50];
             float nilai;
@@ -144,10 +170,28 @@ void tampilkanSemuaDataFile() {
             hapusNewline(baris);
             nilai = toFloat(baris);
 
-            printf("%d. %s : %.2f\n", i + 1, namaMK, nilai);
+            if (nilai < 0 || nilai > 100) {
+                printf(RED "  %d. %s : %.2f (Nilai tidak valid)\n" RESET, i + 1, namaMK, nilai);
+                continue;
         }
+        printf("  %d. %s : %.2f\n", i + 1, namaMK, nilai);
+            total += nilai;
+            validMK++;
     }
+    if (validMK == 0) {
+            printf(RED "Tidak ada mata kuliah valid untuk mahasiswa ini.\n" RESET);
+            continue;
+}
+float rata = total / validMK;
+        const char *grd = grade(rata);
+        float ipk = getBobotGrade(rata);
+        const char *status = statusKelulusan(ipk);
 
+        printf(GREEN "Rata-rata Nilai: %.2f\n" RESET, rata);
+        printf(GREEN "Grade: %s\n" RESET, grd);
+        printf(GREEN "IPK: %.2f\n" RESET, ipk);
+        printf(GREEN "Status Kelulusan: %s\n" RESET, status);
+}
     fclose(fr);
 }
 
@@ -184,9 +228,15 @@ int main(){
             fgets(mhs.NIM, sizeof(mhs.NIM), stdin);
             hapusNewline(mhs.NIM);
 
-            printf("Masukkan jumlah mata kuliah : ");
+            printf("Masukkan jumlah mata kuliah (1-9): ");
             scanf("%d", &mhs.jumlahMK);
             getchar();
+
+            // batasi jumlahMK
+            if (mhs.jumlahMK < 1 || mhs.jumlahMK > 9) {
+                printf(RED "Jumlah mata kuliah harus antara 1 dan 9. Input dibatalkan.\n" RESET);
+                continue;
+            }
 
             printf("\n=== Input Mata Kuliah & Nilai ===\n");
 
@@ -197,12 +247,36 @@ int main(){
                 printf("Nama Mata Kuliah : ");
                 fgets(mhs.mk[i].namaMK, sizeof(mhs.mk[i].namaMK), stdin);
 
-                printf("Nilai : ");
+                printf("Nilai (0-100): ");
                 scanf("%f", &mhs.mk[i].nilai);
                 getchar();
-                total += mhs.mk[i].nilai;
 
+                if (mhs.mk[i].nilai < 0 || mhs.mk[i].nilai > 100) {
+                    printf(RED "Nilai harus antara 0 dan 100. Masukkan ulang.\n" RESET);
+                    i--;  
+                    continue;
+                }
+                total += mhs.mk[i].nilai;
             }
+
+            // Hitung rata-rata, grade, IPK untuk data baru
+            float rata = total / mhs.jumlahMK;
+            const char *grd = grade(rata);
+            float ipk = getBobotGrade(rata);
+            const char *status = statusKelulusan(ipk);
+
+            printf(BLUE "\n=== RINGKASAN DATA BARU ===\n" RESET);
+            printf("Nama\t: %s\n", mhs.nama);
+            printf("NIM\t: %s\n", mhs.NIM);
+            printf("Jumlah MK: %d\n", mhs.jumlahMK);
+            for (int j = 0; j < mhs.jumlahMK; j++) {
+                printf("  %d. %s : %.2f\n", j + 1, mhs.mk[j].namaMK, mhs.mk[j].nilai);
+            }
+            printf(GREEN "Rata-rata Nilai: %.2f\n" RESET, rata);
+            printf(GREEN "Grade: %s\n" RESET, grd);
+            printf(GREEN "IPK: %.2f\n" RESET, ipk);
+            printf(GREEN "Status Kelulusan: %s\n" RESET, status);
+
             // nyimpan file
 
             FILE *fp = fopen("data.txt", "a");
