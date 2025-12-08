@@ -8,14 +8,6 @@
 #define YELLOW  "\033[33m"
 #define RESET   "\033[0m"
 
-// warna background teks
-#define BG_RED      "\033[41m"
-#define BG_GREEN    "\033[42m"
-#define BG_BLUE     "\033[44m"
-#define BG_YELLOW   "\033[43m"
-#define BG_MAGENTA    "\033[45m"
-#define BG_BRMUDA    "\033[46m"
-
 struct MataKuliah {
     char namaMK[50];
     float nilai;
@@ -85,22 +77,20 @@ float getBobotGrade(float rata) {
 }
 
 const char *statusKelulusan(float ipk) {
-    if (ipk >= 2.00) return BG_GREEN "Lulus" RESET;
-    return BG_RED "Tidak Lulus" RESET;
+    if (ipk >= 2.00) return GREEN "Lulus" RESET;
+    return RED "Tidak Lulus" RESET;
 }
-
 
 //  Tampilkan Semua Data
 
 void tampilkanSemuaDataFile() {
     FILE *fr = fopen("data.txt", "r");
     if (!fr) {
-        printf(RED "File kosong atau tidak ditemukan.\n" RESET);
+        printf(RED "Tidak ada data yang tersimpan.\n" RESET);
         return;
     }
 
-    printf("\n" BG_MAGENTA "=== DATA MAHASISWA ===" RESET "\n");
-
+    printf("\n=== DATA MAHASISWA ===\n");
     char baris[100];
     int mhsKe = 0;
 
@@ -116,7 +106,7 @@ void tampilkanSemuaDataFile() {
         fgets(baris, sizeof(baris), fr);
         jumlahMK = toInt(baris);
 
-        printf("\n" BG_YELLOW " Mahasiswa ke-%d " RESET "\n", ++mhsKe);
+        printf("\n Mahasiswa ke-%d \n", ++mhsKe);
         printf("Nama       : %s\n", nama);
         printf("NIM        : %s\n", NIM);
         printf("Jumlah MK  : %d\n", jumlahMK);
@@ -142,17 +132,18 @@ void tampilkanSemuaDataFile() {
     }
 
     fclose(fr);
+
+    if (mhsKe == 0) {
+        printf(RED "Tidak ada data yang tersimpan.\n" RESET);
+    }
 }
-
-
-// PROGRAM UTAMA
 
 int main() {
     struct Mahasiswa mhs;
     int choice;
 
     while (1) {
-        printf("\n" BG_BRMUDA"=== MENU UTAMA ===" RESET "\n");
+        printf("\n=== MENU UTAMA ===\n");
         printf(GREEN"1. Input Data Mahasiswa\n"RESET);
         printf(GREEN"2. Tampilkan Semua Data\n"RED);
         printf(RED"3. Keluar\n"RESET);
@@ -161,7 +152,7 @@ int main() {
         getchar();
 
         if (choice == 1) {
-            printf("\n" BG_YELLOW "=== INPUT DATA MAHASISWA ===" RESET "\n");
+            printf("\n=== INPUT DATA MAHASISWA ===\n");
 
             printf("Masukkan Nama : ");
             fgets(mhs.nama, sizeof(mhs.nama), stdin); hapusNewline(mhs.nama);
@@ -201,7 +192,7 @@ int main() {
             float rata = total / mhs.jumlahMK;
             float ipk = getBobotGrade(rata);
 
-            printf("\n" BG_GREEN "=== RINGKASAN DATA ===" RESET "\n");
+            printf("\n=== RINGKASAN DATA ===\n");
             printf("Nama  : %s\n", mhs.nama);
             printf("NIM   : %s\n", mhs.NIM);
             printf(GREEN "Rata-rata : %.2f\n" RESET, rata);
