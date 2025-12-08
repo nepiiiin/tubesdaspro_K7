@@ -8,6 +8,11 @@
 #define YELLOW "\033[33m"
 #define RESET "\033[0m"
 
+#define BG_RED      "\033[41m"
+#define BG_GREEN    "\033[42m"
+#define BG_BLUE     "\033[44m"
+#define BG_YELLOW   "\033[43m"
+
 struct MataKuliah
 {
     char namaMK[50];
@@ -85,9 +90,9 @@ float getBobotGrade(float rata)
 const char *statusKelulusan(float ipk)
 {
     if (ipk >= 2.00)
-        return "Lulus";
+        return BG_GREEN "Lulus" RESET;
     else
-        return "Tidak Lulus";
+        return BG_RED"Tidak Lulus" RESET;
 }
 
 float toFloat(const char *str) {
@@ -126,7 +131,7 @@ void tampilkanSemuaDataFile() {
     int jumlahMK;
     int mhsKe = 0;
 
-    printf(BLUE "\n=== DATA MAHASISWA YANG SUDAH ADA ===\n" RESET);
+    printf(BG_BLUE "\n=== DATA MAHASISWA YANG SUDAH ADA ===\n" RESET);
 
     while (fgets(baris, sizeof(baris), fr)) {
         hapusNewline(baris);
@@ -151,7 +156,7 @@ void tampilkanSemuaDataFile() {
             continue;
         }
 
-        printf(YELLOW"\n=== Mahasiswa ke-%d ===\n"RESET, ++mhsKe);
+        printf(BG_YELLOW"\n=== Mahasiswa ke-%d ===\n"RESET, ++mhsKe);
         printf("Nama\t: %s\n", nama);
         printf("NIM\t: %s\n", NIM);
         printf("Jumlah MK: %d\n", jumlahMK);
@@ -204,7 +209,7 @@ int main(){
 
     while (1)
     {
-        printf(RED"\n==="RESET" MENU UTAMA MENGELOLA NILAI MAHASISWA"RED" ===\n" RESET);
+        printf(BG_RED"\n=== MENU UTAMA MENGELOLA NILAI MAHASISWA ===\n" RESET);
         printf(GREEN "1. Input Data Mahasiswa\n" RESET);
         printf(GREEN "2. Tampilkan Semua Data\n" RESET);
         printf(RED "3. Keluar\n" RESET);
